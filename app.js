@@ -307,6 +307,8 @@ function formatPickupDate(dateString) {
 // NOTIFICATIONS
 // =====================================================
 
+// Ask the browser for notification permission.
+
 function requestNotificationPermission() {
 
     if (
@@ -326,6 +328,10 @@ function requestNotificationPermission() {
 }
 
 
+// =====================================================
+// PICKUP / ORDER DUE NOTIFICATION
+// =====================================================
+
 function showPickupNotification(order) {
 
     const customerName =
@@ -340,7 +346,7 @@ function showPickupNotification(order) {
 
 
     const message =
-        `Pickup today: ${customerName}'s ${itemName} order is due for pickup. 📦❤️`;
+        `${customerName}'s ${itemName} order is due to be sent today. 📦`;
 
 
     if (
@@ -349,7 +355,7 @@ function showPickupNotification(order) {
     ) {
 
         new Notification(
-            "📦 Pickup Reminder — My Rule, My World",
+            "📦 Order Due Today",
             {
                 body: message,
                 icon:
@@ -360,16 +366,12 @@ function showPickupNotification(order) {
 
     }
 
-    else {
-
-        alert(
-            `📦 PICKUP REMINDER\n\n${message}`
-        );
-
-    }
-
 }
 
+
+// =====================================================
+// CHECK ORDER DUE NOTIFICATIONS
+// =====================================================
 
 function checkPickupNotifications() {
 
@@ -420,14 +422,8 @@ function checkPickupNotifications() {
             }
 
 
-            /*
-             * Completed orders should not receive
-             * pickup reminders.
-             *
-             * Normally completed orders are removed
-             * entirely, but this also protects older
-             * completed orders that may still exist.
-             */
+            // Completed orders should not receive
+            // order-due notifications.
 
             if (
                 order.completed === true
@@ -441,6 +437,9 @@ function checkPickupNotifications() {
             const reminderId =
                 `${order.id || index}-${order.pickupDate}`;
 
+
+            // Prevent repeated notifications
+            // for the same order on the same date.
 
             if (
                 notificationLog.includes(
@@ -476,6 +475,207 @@ function checkPickupNotifications() {
 }
 
 
+// =====================================================
+// LOW STOCK NOTIFICATION LOG
+// =====================================================
+
+function getLowStockNotificationLog() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "lowStockNotifications"
+            )
+        ) || [];
+
+    } catch (error) {
+
+        return [];
+
+    }
+
+}
+
+
+function saveLowStockNotificationLog(log) {
+
+    localStorage.setItem(
+        "lowStockNotifications",
+        JSON.stringify(log)
+    );
+
+}
+
+
+// =====================================================
+// SHOW LOW STOCK NOTIFICATION
+// =====================================================
+
+function showLowStockNotification(item) {
+
+    if (!item) {
+
+        return;
+
+    }
+
+
+    if (
+        !(
+            "Notification" in window
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        Notification.permission !==
+        "granted"
+    ) {
+
+        return;
+
+    }
+
+
+    const itemName =
+        getItemName(item);
+
+
+    const emoji =
+        getItemEmoji(item);
+
+
+    new Notification(
+        `${emoji} Low Stock`,
+        {
+            body:
+                `${itemName} has only 1 left in stock.`,
+            icon:
+                item.photo ||
+                undefined
+        }
+    );
+
+}
+
+
+// =====================================================
+// CHECK LOW STOCK
+//
+// Notification rule:
+//
+// 2+ -> 1 = notify
+// 1 -> 1 = do nothing
+// 1 -> 0 = do nothing
+// 0 -> 1 = do nothing if it never went back to 2+
+// 1 -> 2+ = reset notification
+// 2+ -> 1 = notify again
+// =====================================================
+
+function checkLowStockNotifications() {
+
+    const inventory =
+        getInventory();
+
+
+    let notificationLog =
+        getLowStockNotificationLog();
+
+
+    inventory.forEach(
+        function(item) {
+
+            const stock =
+                Number(item.stock) || 0;
+
+
+            const itemId =
+                item.id;
+
+
+            if (!itemId) {
+
+                return;
+
+            }
+
+
+            // If stock is exactly 1,
+            // notify only if this item has not
+            // already been notified during its
+            // current low-stock state.
+
+            if (
+                stock === 1
+            ) {
+
+                if (
+                    !notificationLog.includes(
+                        itemId
+                    )
+                ) {
+
+                    showLowStockNotification(
+                        item
+                    );
+
+
+                    notificationLog.push(
+                        itemId
+                    );
+
+                }
+
+            }
+
+
+            // Once stock reaches 2 or more,
+            // reset the notification lock.
+            //
+            // This means:
+            //
+            // 2 -> 1 = notify
+            // 1 -> 2 = reset
+            // 2 -> 1 = notify again
+
+            else if (
+                stock >= 2
+            ) {
+
+                notificationLog =
+                    notificationLog.filter(
+                        function(id) {
+
+                            return (
+                                id !==
+                                itemId
+                            );
+
+                        }
+                    );
+
+            }
+
+        }
+    );
+
+
+    saveLowStockNotificationLog(
+        notificationLog
+    );
+
+}
+
+
+// =====================================================
+// SCHEDULE ORDER-DUE CHECK
+// =====================================================
+
 function schedulePickupCheck() {
 
     const now =
@@ -509,6 +709,8 @@ function schedulePickupCheck() {
 
             checkPickupNotifications();
 
+            checkLowStockNotifications();
+
             schedulePickupCheck();
 
         },
@@ -518,9 +720,15 @@ function schedulePickupCheck() {
 }
 
 
+// =====================================================
+// START NOTIFICATIONS
+// =====================================================
+
 requestNotificationPermission();
 
 checkPickupNotifications();
+
+checkLowStockNotifications();
 
 schedulePickupCheck();
 
@@ -2666,6 +2874,17 @@ if (bagForm) {
                         : null;
 
 
+                // Remember the old stock before
+                // replacing the item.
+
+                const oldStock =
+                    existingItem
+                        ? Number(
+                            existingItem.stock
+                        ) || 0
+                        : null;
+
+
                 const item = {
 
                     id:
@@ -2749,6 +2968,88 @@ if (bagForm) {
                     );
 
 
+                    // =================================================
+                    // LOW STOCK NOTIFICATION WHEN EDITING
+                    // =================================================
+                    //
+                    // Only notify when the stock actually reaches 1
+                    // from a higher amount.
+                    //
+                    // Example:
+                    // 3 -> 1 = notify
+                    // 2 -> 1 = notify
+                    // 1 -> 1 = no repeat
+                    // 1 -> 2 = reset
+                    // 2 -> 1 = notify again
+                    // =================================================
+
+                    if (
+                        oldStock !== null &&
+                        oldStock > 1 &&
+                        Number(stock) === 1
+                    ) {
+
+                        let notificationLog =
+                            getLowStockNotificationLog();
+
+
+                        if (
+                            !notificationLog.includes(
+                                item.id
+                            )
+                        ) {
+
+                            showLowStockNotification(
+                                item
+                            );
+
+
+                            notificationLog.push(
+                                item.id
+                            );
+
+
+                            saveLowStockNotificationLog(
+                                notificationLog
+                            );
+
+                        }
+
+                    }
+
+
+                    // If stock is now 2 or more,
+                    // remove the notification lock so
+                    // a future drop to 1 can notify again.
+
+                    if (
+                        Number(stock) >= 2
+                    ) {
+
+                        let notificationLog =
+                            getLowStockNotificationLog();
+
+
+                        notificationLog =
+                            notificationLog.filter(
+                                function(id) {
+
+                                    return (
+                                        id !==
+                                        item.id
+                                    );
+
+                                }
+                            );
+
+
+                        saveLowStockNotificationLog(
+                            notificationLog
+                        );
+
+                    }
+
+
                     alert(
                         `${getItemEmoji(item)} Item updated! ❤️`
                     );
@@ -2763,6 +3064,42 @@ if (bagForm) {
                     inventory.push(
                         item
                     );
+
+
+                    // If a brand-new item is added
+                    // with exactly 1 in stock, notify once.
+
+                    if (
+                        Number(stock) === 1
+                    ) {
+
+                        let notificationLog =
+                            getLowStockNotificationLog();
+
+
+                        if (
+                            !notificationLog.includes(
+                                item.id
+                            )
+                        ) {
+
+                            showLowStockNotification(
+                                item
+                            );
+
+
+                            notificationLog.push(
+                                item.id
+                            );
+
+
+                            saveLowStockNotificationLog(
+                                notificationLog
+                            );
+
+                        }
+
+                    }
 
 
                     alert(
@@ -3494,7 +3831,7 @@ function editBag(index) {
 // When Mom checks an order:
 //
 // 1. Ask:
-//    "r u sure ur done with the order?"
+//    "Are you sure you want to complete this order?"
 //
 // 2. If NO:
 //    Keep the order.
@@ -3561,10 +3898,6 @@ function completeAndRemoveOrder(index) {
     //
     // When an in-stock order is completed, the stock
     // is reduced now.
-    //
-    // We check stock again here because it is possible
-    // that inventory was changed after the order was
-    // originally created.
     // -------------------------------------------------
 
     if (
@@ -3599,9 +3932,97 @@ function completeAndRemoveOrder(index) {
         }
 
 
+        // Remember the stock before reducing it.
+
+        const oldStock =
+            currentStock;
+
+
         item.stock =
             currentStock -
             quantity;
+
+
+        const newStock =
+            Number(
+                item.stock
+            ) || 0;
+
+
+        // =================================================
+        // LOW STOCK NOTIFICATION
+        //
+        // If completing this order causes:
+        //
+        // 2+ -> 1
+        //
+        // notify once.
+        // =================================================
+
+        if (
+            oldStock > 1 &&
+            newStock === 1
+        ) {
+
+            let notificationLog =
+                getLowStockNotificationLog();
+
+
+            if (
+                !notificationLog.includes(
+                    item.id
+                )
+            ) {
+
+                showLowStockNotification(
+                    item
+                );
+
+
+                notificationLog.push(
+                    item.id
+                );
+
+
+                saveLowStockNotificationLog(
+                    notificationLog
+                );
+
+            }
+
+        }
+
+
+        // If stock becomes 2 or more,
+        // make sure the low-stock notification
+        // is reset for a future 2+ -> 1 transition.
+
+        if (
+            newStock >= 2
+        ) {
+
+            let notificationLog =
+                getLowStockNotificationLog();
+
+
+            notificationLog =
+                notificationLog.filter(
+                    function(id) {
+
+                        return (
+                            id !==
+                            item.id
+                        );
+
+                    }
+                );
+
+
+            saveLowStockNotificationLog(
+                notificationLog
+            );
+
+        }
 
     }
 
