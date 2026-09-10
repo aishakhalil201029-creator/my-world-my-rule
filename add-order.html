@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Order - My Rule, My World</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <main class="app">
+
+        <!-- =========================================
+             PAGE HEADER
+             ========================================= -->
+
+        <header class="page-header">
+
+            <a href="orders.html" class="back-button">
+                ← Orders
+            </a>
+
+            <h1>📦 New Order</h1>
+
+            <p>Enter the customer's order</p>
+
+        </header>
+
+
+        <!-- =========================================
+             ORDER FORM
+             ========================================= -->
+
+        <form
+            class="order-form"
+            id="order-form"
+        >
+
+
+            <!-- =========================================
+                 CUSTOMER
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="customer-name">
+                    Customer name
+                </label>
+
+                <input
+                    type="text"
+                    id="customer-name"
+                    placeholder="e.g. Ama"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================================
+                 PHONE
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="customer-phone">
+                    Phone number
+                </label>
+
+                <input
+                    type="tel"
+                    id="customer-phone"
+                    placeholder="e.g. 024 XXX XXXX"
+                    autocomplete="tel"
+                >
+
+            </div>
+
+
+            <!-- =========================================
+                 ORDER TYPE
+                 ========================================= -->
+
+            <div class="form-group order-type-picker">
+
+                <label>
+                    Is this item in stock or a pre-order?
+                </label>
+
+
+                <!-- ORDER TYPE BUTTONS -->
+
+                <div class="order-type-buttons">
+
+                    <button
+                        type="button"
+                        class="order-type-button active"
+                        data-order-type="In stock"
+                    >
+
+                        <span class="type-emoji">
+                            🟢
+                        </span>
+
+                        <span>
+                            In stock
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="order-type-button"
+                        data-order-type="Pre-order"
+                    >
+
+                        <span class="type-emoji">
+                            🟡
+                        </span>
+
+                        <span>
+                            Pre-order
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!--
+                    Hidden field.
+
+                    app.js uses this to know whether
+                    the order is "In stock" or "Pre-order".
+                -->
+
+                <input
+                    type="hidden"
+                    id="order-type"
+                    value="In stock"
+                >
+
+
+                <p class="photo-help">
+
+                    Choose Pre-order if the item is not
+                    currently available but will be
+                    sourced later.
+
+                </p>
+
+            </div>
+
+
+            <!-- =========================================
+                 ITEM PICKER
+                 
+                 THIS SECTION IS FOR IN-STOCK ORDERS.
+                 ========================================= -->
+
+            <div
+                class="form-group order-item-picker"
+                id="in-stock-item-section"
+            >
+
+                <label>
+                    What type of item is the customer ordering?
+                </label>
+
+
+                <!-- =====================================
+                     ITEM TYPE BUTTONS
+                     ===================================== -->
+
+                <div class="item-type-buttons">
+
+                    <button
+                        type="button"
+                        class="item-type-button"
+                        data-item-type="Bag"
+                    >
+
+                        <span class="type-emoji">
+                            👜
+                        </span>
+
+                        <span>
+                            Bag
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="item-type-button"
+                        data-item-type="Shoe"
+                    >
+
+                        <span class="type-emoji">
+                            👟
+                        </span>
+
+                        <span>
+                            Shoe
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="item-type-button"
+                        data-item-type="Watch"
+                    >
+
+                        <span class="type-emoji">
+                            ⌚
+                        </span>
+
+                        <span>
+                            Watch
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="item-type-button"
+                        data-item-type="Charm"
+                    >
+
+                        <span class="type-emoji">
+                            ✨
+                        </span>
+
+                        <span>
+                            Charm
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!--
+                    Hidden field used by app.js to store
+                    the selected item type.
+                -->
+
+                <input
+                    type="hidden"
+                    id="item-type-select"
+                    value=""
+                >
+
+
+                <!-- =====================================
+                     INVENTORY PICKER
+                     ===================================== -->
+
+                <div
+                    class="inventory-picker"
+                    id="inventory-selection-section"
+                >
+
+                    <!-- SEARCH -->
+
+                    <div class="inventory-search-wrapper">
+
+                        <span class="inventory-search-icon">
+                            🔍
+                        </span>
+
+                        <input
+                            type="search"
+                            id="inventory-search"
+                            placeholder="Search by name, brand, colour..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+                    <p class="photo-help">
+                        Only items of the selected type will appear.
+                    </p>
+
+
+                    <!-- =================================
+                         INVENTORY RESULTS
+                         ================================= -->
+
+                    <div
+                        class="inventory-results"
+                        id="inventory-results"
+                    >
+                    </div>
+
+
+                    <!-- =================================
+                         NO RESULTS
+                         ================================= -->
+
+                    <p
+                        id="no-inventory-results"
+                        class="inventory-no-results"
+                        style="display: none;"
+                    >
+                        Choose a category above to see
+                        available inventory.
+                    </p>
+
+
+                    <!--
+                        Hidden compatibility select.
+
+                        app.js uses this to store the
+                        selected inventory item.
+                    -->
+
+                    <select
+                        id="bag"
+                        aria-hidden="true"
+                        tabindex="-1"
+                    >
+
+                        <option value="">
+                            Select an item
+                        </option>
+
+                    </select>
+
+
+                    <!-- =================================
+                         SELECTED ITEM STATUS
+                         ================================= -->
+
+                    <div
+                        id="selected-item-label"
+                        class="selected-item-label"
+                        style="display: none;"
+                    >
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
+                     SELECTED INVENTORY ITEM PREVIEW
+                     ===================================== -->
+
+                <div
+                    id="selected-bag-preview"
+                    class="selected-bag-preview"
+                    style="display: none;"
+                >
+                </div>
+
+            </div>
+
+
+            <!-- =========================================
+                 PRE-ORDER ITEM SECTION
+
+                 This appears when Pre-order is selected.
+
+                 The customer does NOT need to choose
+                 something from inventory.
+
+                 They simply choose:
+                 Bag / Shoe / Watch / Charm
+
+                 and describe what they want.
+                 ========================================= -->
+
+            <div
+                class="form-group preorder-item-section"
+                id="preorder-item-section"
+                style="display: none;"
+            >
+
+                <label>
+                    What type of item is the customer looking for?
+                </label>
+
+
+                <!-- =====================================
+                     PRE-ORDER TYPE BUTTONS
+                     ===================================== -->
+
+                <div class="item-type-buttons">
+
+                    <button
+                        type="button"
+                        class="item-type-button preorder-type-button"
+                        data-preorder-type="Bag"
+                    >
+
+                        <span class="type-emoji">
+                            👜
+                        </span>
+
+                        <span>
+                            Bag
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="item-type-button preorder-type-button"
+                        data-preorder-type="Shoe"
+                    >
+
+                        <span class="type-emoji">
+                            👟
+                        </span>
+
+                        <span>
+                            Shoe
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="item-type-button preorder-type-button"
+                        data-preorder-type="Watch"
+                    >
+
+                        <span class="type-emoji">
+                            ⌚
+                        </span>
+
+                        <span>
+                            Watch
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="item-type-button preorder-type-button"
+                        data-preorder-type="Charm"
+                    >
+
+                        <span class="type-emoji">
+                            ✨
+                        </span>
+
+                        <span>
+                            Charm
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!--
+                    Hidden field for the pre-order category.
+                -->
+
+                <input
+                    type="hidden"
+                    id="preorder-item-type"
+                    value=""
+                >
+
+
+                <!-- =====================================
+                     PRE-ORDER DESCRIPTION
+                     ===================================== -->
+
+                <div
+                    class="preorder-description-box"
+                    id="preorder-description-section"
+                    style="display: none;"
+                >
+
+                    <label for="preorder-description">
+                        Describe the item
+                    </label>
+
+                    <textarea
+                        id="preorder-description"
+                        placeholder="e.g. Black leather shoulder bag with gold chain..."
+                    ></textarea>
+
+                    <p class="photo-help">
+                        Add the colour, style, size, brand,
+                        or anything else Mom needs to know.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================
+                 QUANTITY
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="quantity">
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    min="1"
+                    value="1"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================================
+                 PRICE
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="price">
+                    Price per item (GH₵)
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    min="0"
+                    step="0.01"
+                    placeholder="e.g. 300"
+                >
+
+            </div>
+
+
+            <!-- =========================================
+                 PAYMENT
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="payment">
+                    Payment
+                </label>
+
+                <select id="payment">
+
+                    <option value="Not paid">
+                        Not paid
+                    </option>
+
+                    <option value="Partially paid">
+                        Partially paid
+                    </option>
+
+                    <option value="Paid">
+                        Paid
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================================
+                 PICKUP DATE
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="pickup-date">
+                    📅 Pickup date
+                </label>
+
+                <input
+                    type="date"
+                    id="pickup-date"
+                >
+
+                <p class="photo-help">
+
+                    Set the day the customer should pick
+                    up their order. Mom will get a reminder
+                    that morning.
+
+                </p>
+
+            </div>
+
+
+            <!-- =========================================
+                 NOTES
+                 ========================================= -->
+
+            <div class="form-group">
+
+                <label for="notes">
+                    Notes
+                </label>
+
+                <textarea
+                    id="notes"
+                    placeholder="Anything else Mom needs to remember..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- =========================================
+                 SAVE ORDER
+                 ========================================= -->
+
+            <button
+                type="submit"
+                class="save-order-button"
+            >
+                Save Order
+            </button>
+
+
+        </form>
+
+    </main>
+
+
+    <!-- =========================================
+         APP JAVASCRIPT
+         ========================================= -->
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

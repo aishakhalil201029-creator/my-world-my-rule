@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Item - My Rule, My World</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <main class="app">
+
+        <header class="page-header">
+
+            <a href="inventory.html" class="back-button">
+                ← Inventory
+            </a>
+
+            <h1 id="bag-form-title">
+                👜 Add New Item
+            </h1>
+
+            <p id="bag-form-subtitle">
+                Add an item to your inventory
+            </p>
+
+        </header>
+
+
+        <form class="bag-form" id="bag-form">
+
+
+            <!-- =========================
+                 ITEM TYPE
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="item-type">
+                    What are you adding? *
+                </label>
+
+                <select id="item-type" required>
+
+                    <option value="">
+                        Select item type
+                    </option>
+
+                    <option value="Bag">
+                        👜 Bag
+                    </option>
+
+                    <option value="Shoe">
+                        👟 Shoe
+                    </option>
+
+                    <option value="Watch">
+                        ⌚ Watch
+                    </option>
+
+                    <option value="Charm">
+                        ✨ Charm
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================
+                 BRAND
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="brand">
+                    Brand *
+                </label>
+
+                <input
+                    type="text"
+                    id="brand"
+                    placeholder="e.g. Coach"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 COLOUR
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="bag-colour">
+                    Colour
+                </label>
+
+                <input
+                    type="text"
+                    id="bag-colour"
+                    placeholder="e.g. Black"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 MODEL / NAME
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="model">
+                    Model / Name
+                </label>
+
+                <input
+                    type="text"
+                    id="model"
+                    placeholder="e.g. Lana"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 DESCRIPTION
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="e.g. Black with silver swirl pattern"
+                ></textarea>
+
+            </div>
+
+
+            <!-- =========================
+                 PHOTO
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="bag-photo">
+                    Item Photo
+                </label>
+
+                <input
+                    type="file"
+                    id="bag-photo"
+                    accept="image/*"
+                >
+
+                <p class="photo-help">
+                    Add a clear photo so the item is easy to identify.
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 PRICE
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="bag-price">
+                    Price (GH₵)
+                </label>
+
+                <input
+                    type="number"
+                    id="bag-price"
+                    min="0"
+                    placeholder="e.g. 300"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 STOCK
+                 ========================= -->
+
+            <div class="form-group">
+
+                <label for="stock">
+                    Quantity in stock *
+                </label>
+
+                <input
+                    type="number"
+                    id="stock"
+                    min="0"
+                    value="0"
+                    required
+                >
+
+                <p class="photo-help">
+                    Enter 0 if this item is currently unavailable.
+                    It can still be used for pre-orders.
+                </p>
+
+            </div>
+
+
+            <!-- =========================
+                 SAVE
+                 ========================= -->
+
+            <button
+                type="submit"
+                class="save-order-button"
+            >
+                Save Item
+            </button>
+
+
+        </form>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

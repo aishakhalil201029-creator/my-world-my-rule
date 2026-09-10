@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Inventory - My Rule, My World</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <main class="app">
+
+        <header class="page-header">
+
+            <a href="index.html" class="back-button">
+                ← Home
+            </a>
+
+            <h1>👜 Inventory</h1>
+
+            <p>Keep track of all your inventory</p>
+
+        </header>
+
+
+        <section class="inventory-section">
+
+            <a
+                href="add-bag.html"
+                class="add-order-button"
+            >
+                + Add New item
+            </a>
+
+
+            <!-- INVENTORY SEARCH -->
+
+            <div class="inventory-page-search">
+
+                <input
+                    type="text"
+                    id="inventory-page-search"
+                    placeholder="🔍 Search your inventory..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div
+                class="inventory-list"
+                id="inventory-list"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
