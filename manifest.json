@@ -1,6 +1,6 @@
 {
   "name": "My Rule, My World",
-  "short_name": "My World",
+  "short_name": "My Rule",
   "description": "My Rule, My World business management app",
   "start_url": "./index.html",
   "display": "standalone",
