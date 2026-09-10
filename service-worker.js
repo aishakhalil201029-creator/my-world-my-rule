@@ -1,4 +1,4 @@
-const CACHE_NAME = "my-rule-my-world-v5";
+const CACHE_NAME = "my-rule-my-world-v6";
 
 const FILES_TO_CACHE = [
   "./",
