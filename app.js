@@ -354,15 +354,51 @@ function showPickupNotification(order) {
         Notification.permission === "granted"
     ) {
 
-        new Notification(
-            "📦 Order Due Today — My Rule, My World",
-            {
-                body: message,
-                icon:
-                    order.photo ||
-                    undefined
-            }
-        );
+        if ("serviceWorker" in navigator) {
+
+            navigator.serviceWorker.ready
+                .then(function(registration) {
+
+                    return registration.showNotification(
+                        "📦 Order Due Today — My Rule, My World",
+                        {
+                            body: message,
+                            icon:
+                                order.photo ||
+                                undefined
+                        }
+                    );
+
+                })
+                .catch(function() {
+
+                    new Notification(
+                        "📦 Order Due Today — My Rule, My World",
+                        {
+                            body: message,
+                            icon:
+                                order.photo ||
+                                undefined
+                        }
+                    );
+
+                });
+
+        }
+
+        else {
+
+            new Notification(
+                "📦 Order Due Today — My Rule, My World",
+                {
+                    body: message,
+                    icon:
+                        order.photo ||
+                        undefined
+                }
+            );
+
+        }
 
     }
 
@@ -506,15 +542,51 @@ function showLowStockNotification(item) {
         Notification.permission === "granted"
     ) {
 
-        new Notification(
-            "⚠️ Low Stock — My Rule, My World",
-            {
-                body: message,
-                icon:
-                    item.photo ||
-                    undefined
-            }
-        );
+        if ("serviceWorker" in navigator) {
+
+            navigator.serviceWorker.ready
+                .then(function(registration) {
+
+                    return registration.showNotification(
+                        "⚠️ Low Stock — My Rule, My World",
+                        {
+                            body: message,
+                            icon:
+                                item.photo ||
+                                undefined
+                        }
+                    );
+
+                })
+                .catch(function() {
+
+                    new Notification(
+                        "⚠️ Low Stock — My Rule, My World",
+                        {
+                            body: message,
+                            icon:
+                                item.photo ||
+                                undefined
+                        }
+                    );
+
+                });
+
+        }
+
+        else {
+
+            new Notification(
+                "⚠️ Low Stock — My Rule, My World",
+                {
+                    body: message,
+                    icon:
+                        item.photo ||
+                        undefined
+                }
+            );
+
+        }
 
     }
 
